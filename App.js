@@ -1,10 +1,25 @@
-
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Button, TextInput, Alert, FlatList } from 'react-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer } from '@react-navigation/native';
 
+const Stack = createNativeStackNavigator();
 
 export default function App() {
+   
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="History" component={HistoryScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+    
+  );
+}
+
+function HomeScreen({ navigation }) {
   const [number, setNumber] = useState(0);
   const [number2, setNumber2] = useState(0);
   const [result, setResult] = useState(0);
@@ -47,17 +62,14 @@ export default function App() {
     }
   }
   const checkGuessButtonPressed = () => {
-    if (random == 0) {
-      randomvaluebetween1and100();
-    }    
     addGuessToGuesses();
     checkguess();
   }
-  
-  
- 
+
   return (
     <View style={styles.container}>
+      
+      <View style={styles.container}>
       <Text>Result: {result}</Text>
       {/* number input field to save the number to number state */}
       <TextInput type='text'
@@ -73,19 +85,13 @@ export default function App() {
       <View style={{flex:1, flexDirection: 'row', alignItems: 'center'}}>
       <Button onPress={plusButtonPressed} title="+" />
       <Button onPress={minusButtonPressed} title="-" />
-      </View>
-      <View style={{flex:1, flexDirection: 'column', alignItems: 'center'}}>
-      <Text>Result History:</Text>
-      <FlatList style={styles.list}
-        data={data}
-        
-        keyExtractor={(item, index) => String(index)}
-        renderItem={({ item }) =>
-          <Text>{item.key}</Text>
-        }
+      <Button
+        title="History"
+        onPress={() => navigation.navigate('History', {data: data})}
       />
-      <StatusBar style="auto" />
-      </View>      
+      </View>
+         
+        
       <View style={{flex:2, flexDirection: 'column', alignItems: 'center', flexWrap: 'wrap'}}>
         <Text>Guess a Number between 1-100</Text>
         
@@ -97,10 +103,30 @@ export default function App() {
         style={styles.input}
         placeholder="Guess a Number" 
         onChangeText={(text) => setGuess(text)} />
-        
        
         </View>
       
+    </View>
+    </View>
+  );
+}
+
+function HistoryScreen({ route, navigation }) {
+  const { data } = route.params;
+  return (
+    <View style={styles.container}>
+      <Text>History!</Text>
+      <View style={{flex:1, flexDirection: 'column', alignItems: 'center'}}>
+      <Text>Result History:</Text>
+      <FlatList style={styles.list}
+        data={data}        
+        keyExtractor={(item, index) => String(index)}
+        renderItem={({ item }) =>
+          <Text>{item.key}</Text>
+        }
+      />
+      <StatusBar style="auto" />
+      </View> 
     </View>
   );
 }
